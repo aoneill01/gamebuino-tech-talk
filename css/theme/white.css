@@ -253,6 +253,21 @@ body {
 .reveal .controls {
   color: #2a76dd; }
 
+.reveal .controls-arrow {
+  color: #2a76dd00;
+  background-image: url(../../globant-arrow.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.reveal .controls .navigate-right .controls-arrow {
+  transform: rotate(0deg);
+}
+
+.reveal .controls .navigate-left .controls-arrow {
+  transform: rotate(180deg);
+}
+
 /*********************************************
  * PROGRESS BAR
  *********************************************/
