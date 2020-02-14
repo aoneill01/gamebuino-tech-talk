@@ -8,47 +8,23 @@
 
         <link rel="stylesheet" href="css/reset.css">
         <link rel="stylesheet" href="css/reveal.css">
-        <link rel="stylesheet" href="css/theme/white.css">
+        <link rel="stylesheet" href="css/theme/globant.css">
 
         <!-- Theme used for syntax highlighting of code -->
         <link rel="stylesheet" href="lib/css/monokai.css">
-
-        <!-- Printing and PDF exports -->
-        <script>
-            var link = document.createElement( 'link' );
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-            document.getElementsByTagName( 'head' )[0].appendChild( link );
-        </script>
-
-        <style>
-         #console {
-            margin: 0 auto;
-            width: 788px;
-            height: 428px;
-            background-image: url(console.png);
-            position: relative;
-        }
-
-        #gbscreen {
-            position: absolute;
-            top: 80px;
-            left: 232px;
-        }
-        </style>
     </head>
     <body>
         <div class="reveal">
             <div class="slides">
                 <section>
+                    <h2>Building an Emulator with WebAssembly and Rust</h2>
                     <gamebuino-emulator src="https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin">
                     </gamebuino-emulator>
                 </section>
 
                 <section>
 
-                    <h2>Slide 2</h2>
+                    <h2>Rust</h2>
                     <pre><code data-trim data-line-numbers>
             fn execute_instruction(&mut self, 
               instruction: Instruction) {
@@ -132,6 +108,14 @@
                 </section>
                 <section>
                     <iframe class="stretch" data-src="wasm.html"></iframe>
+                </section>
+                <section>
+                    <h2>Links</h2>
+                    <ul>
+                        <li><a href="https://github.com/aoneill01/wasm-gamebuino">github.com/aoneill01/wasm-gamebuino</a></li>
+                        <li><a href="https://gamebuino.com/">gamebuino.com</a></li>
+                        <li><a href="https://rustwasm.github.io/docs/book/">rustwasm.github.io/docs/book/</a></li>
+                    </ul>
                 </section>
             </div>
         </div>
