@@ -16,14 +16,76 @@
     <body>
         <div class="reveal">
             <div class="slides">
-                <section>
+                <section data-background="rgb(0, 122, 209)">
                     <h2>Building an Emulator with WebAssembly and Rust</h2>
                     <gamebuino-emulator src="https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin">
                     </gamebuino-emulator>
+                    <a href="http://games.aoneill.com/wasm-proto">http://games.aoneill.com/wasm-proto</a>
                 </section>
 
-                <section>
+                <section data-background="rgb(4, 217, 206)">
+                    <h2>Microcontroller</h2>
+                    <ul>
+                        <li>32-bit ARM Cortex-M0+ @ 48MHz</li>
+                        <li>256KB flash</li>
+                        <li>32KB SRAM</li>
+                        <li>Up to 52 programmable I/O pins</li>
+                        <li>6 serial communication modules (SERCOM)</li>
+                        <li>Timers and interrupts</li>
+                        <li>Direct memory access (DMA) controller</li>
+                    </ul>
+                </section>
 
+                <section data-background="rgb(4, 217, 206)">
+                    <h2>Screen</h2>
+                    <ul>
+                        <li>160 × 128 pixels</li>
+                        <li>65K colors</li>
+                        <li>Communicates over SERCOM4 using SPI</li>
+                    </ul>
+                </section>
+
+                <section data-background="rgb(4, 217, 206)">
+                    <h2>Buttons</h2>
+                    <ul>
+                        <li>Communicates over SERCOM4 using SPI</li>
+                        <li>D-pad, A, B, Menu, and Home all encoded as a single byte</li>
+                    </ul>
+                </section>
+
+                <section data-background="rgb(4, 217, 206)">
+                    <h2>Ignored</h2>
+                    <ul>
+                        <li>Sound</li>
+                        <li>SD card</li>
+                        <li>Lights</li>
+                        <li>USB</li>
+                    </ul>
+                </section>
+
+                <section data-background="rgb(4, 217, 206)">
+                    <pre><code data-trim data-line-numbers class="plaintext">
+                        listen for button input
+                        initialize emulator with game ROM
+                        call gameLoop()
+
+                        function gameLoop() {
+                            tell emulator which buttons are pressed
+                            loop for some number of steps {
+                                simulate next CPU instruction
+                            }
+                            draw screen to &lt;canvas&gt;
+                            schedule gameLoop() to be called in the future
+                        }
+                    </code></pre>
+                </section>
+ 
+                <section data-background="rgb(4, 217, 206)">
+                    <h2>Why?</h2>
+                    <img src="images/comparison.png" height="500" />
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
                     <h2>Rust</h2>
                     <pre><code data-trim data-line-numbers>
             fn execute_instruction(&mut self, 
@@ -39,7 +101,7 @@
                     </code></pre>
                 </section>
 
-                <section>
+                <section data-background="rgb(153, 90, 230)">
                     <pre><code data-trim data-line-numbers>
                         (module
                           (func (export "add") (param $lhs i32) (param $rhs i32)
@@ -53,7 +115,7 @@
                     </code></pre>
                 </section>
 
-                <section>
+                <section data-background="rgb(153, 90, 230)">
                     <pre><code data-trim data-line-numbers="|7-9|10">
                         &#x3C;!DOCTYPE html&#x3E;
                         &#x3C;html&#x3E;
@@ -72,7 +134,7 @@
                     </code></pre>
                 </section>
                 
-                <section>
+                <section data-background="rgb(153, 90, 230)">
                     <pre style="font-size: 0.4em;"><code data-trim data-line-numbers="|17-20" style="max-height: 600px;">
                     (module
                         (import "js" "mem" (memory 1))
@@ -106,10 +168,12 @@
                     )
                     </code></pre>
                 </section>
+
                 <section>
                     <iframe class="stretch" data-src="wasm.html"></iframe>
                 </section>
-                <section>
+
+                <section data-background="rgb(78, 91, 101)">
                     <h2>Links</h2>
                     <ul>
                         <li><a href="https://github.com/aoneill01/wasm-gamebuino">github.com/aoneill01/wasm-gamebuino</a></li>
