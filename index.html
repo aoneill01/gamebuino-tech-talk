@@ -85,22 +85,6 @@
                     <img src="images/comparison.png" height="500" />
                 </section>
 
-                <section data-background="rgb(250, 12, 147)">
-                    <h2>Rust</h2>
-                    <pre><code data-trim data-line-numbers>
-            fn execute_instruction(&mut self, 
-              instruction: Instruction) {
-              match instruction {
-                Instruction::LslImm { rs, rd, offset } => {
-                  let original = self.read_register(rs);
-                  let result = original << offset;
-                  self.set_register(rd, result);
-                  self.cond_reg.c = original & (1 << offset) != 0;
-                  self.set_nz(result);
-                }
-                    </code></pre>
-                </section>
-
                 <section data-background="rgb(153, 90, 230)">
                     <pre><code data-trim data-line-numbers>
                         (module
@@ -169,8 +153,25 @@
                     </code></pre>
                 </section>
 
-                <section>
-                    <iframe class="stretch" data-src="wasm.html"></iframe>
+                <section data-background="rgb(153, 90, 230)">
+                    <!-- <iframe class="stretch" data-src="wasm.html"></iframe> -->
+                    <wasm-slide></wasm-slide>
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
+                    <h2>Rust</h2>
+                    <pre><code data-trim data-line-numbers>
+            fn execute_instruction(&mut self, 
+              instruction: Instruction) {
+              match instruction {
+                Instruction::LslImm { rs, rd, offset } => {
+                  let original = self.read_register(rs);
+                  let result = original << offset;
+                  self.set_register(rd, result);
+                  self.cond_reg.c = original & (1 << offset) != 0;
+                  self.set_nz(result);
+                }
+                    </code></pre>
                 </section>
 
                 <section data-background="rgb(78, 91, 101)">
@@ -201,5 +202,6 @@
             });
         </script>
         <script src="https://unpkg.com/@aoneill01/wasm-gamebuino" type="module"></script>
+        <script src="js/wasm-slide.js"></script>
     </body>
 </html>
