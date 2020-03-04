@@ -164,6 +164,57 @@
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
+                    <pre><code data-trim data-line-numbers style="max-height: 600px;" class="rust">
+                        pub struct St7735 {
+                            …
+                            image_data: [0; St7735::WIDTH * St7735::HEIGHT];
+                        }
+                        
+                        impl St7735 {
+                            …
+                            pub fn byte_received(&mut self, value: u8, 
+                                porta: &PortRegisters, portb: &PortRegisters) {
+                                …
+                                let r = (0b1111100000000000 & pixel_data) &gt;&gt; 8;
+                                let g = (0b0000011111100000 & pixel_data) &gt;&gt; 3;
+                                let b = (0b0000000000011111 & pixel_data) &lt;&lt; 3;
+                                let color = (255 &lt;&lt; 24) | // alpha
+                                            (b   &lt;&lt; 16) | // blue
+                                            (g   &lt;&lt;  8) | // green
+                                             r;           // red
+                                …
+                                self.image_data[base_index] = color;
+                            }
+                        }
+                    </code></pre>
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
+                    <pre><code data-trim data-line-numbers style="max-height: 600px;" class="javascript">
+                        step(timestamp) {
+                            … // Snip code to calculate number of iterations
+                    
+                            // Run number of emulated cycles equal to `iterations`
+                            this.gamebuino.run(iterations, this.buttonState);
+                    
+                            // Draw to canvas
+                            let buf8 = new Uint8ClampedArray(
+                                memory.buffer,                  // buffer
+                                this.gamebuino.image_pointer(), // byteOffset
+                                160 * 128 * 4                   // length
+                            );
+                            this.imageData.data.set(buf8);
+                            this.ctx.putImageData(this.imageData, 0, 0);
+                            this.ctx.drawImage(this.canvas, 0, 0);
+                    
+                            // Request next step
+                            this.requestId = 
+                                requestAnimationFrame(t => this.step(t));
+                        }
+                    </code></pre>
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
                     <h2>Rust</h2>
                     <pre><code data-trim data-line-numbers>
             fn execute_instruction(&mut self, 
