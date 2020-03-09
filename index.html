@@ -34,7 +34,6 @@
                         <li>32-bit ARM Cortex-M0+ @ 48MHz</li>
                         <li>256KB flash</li>
                         <li>32KB SRAM</li>
-                        <li>Up to 52 programmable I/O pins</li>
                         <li>6 serial communication modules (SERCOM)</li>
                         <li>Timers and interrupts</li>
                         <li>Direct memory access (DMA) controller</li>
@@ -282,5 +281,22 @@
         </script>
         <script src="https://unpkg.com/@aoneill01/wasm-gamebuino" type="module"></script>
         <script src="js/wasm-slide.js"></script>
+        <script>
+            let index = 0;
+            const games = [
+                "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin",
+                "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/CatsAndCoinsDemo/CatsAndCoinsDemo.bin",
+                "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/PongMETA/PongMETA.bin",
+                "https://raw.githubusercontent.com/aoneill01/meta-dn2/feature/no-sd/binaries/DnGame/DNGAME.BIN"
+            ]
+            setInterval(() => {
+                const gamepad = navigator.getGamepads()[0];
+                if (!gamepad) return;
+                if (gamepad.buttons[7].pressed) {
+                    index = (index + 1) % games.length;
+                    document.querySelector("gamebuino-emulator").src = games[index];
+                }
+            }, 1000);
+        </script>
     </body>
 </html>
