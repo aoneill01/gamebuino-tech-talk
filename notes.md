@@ -84,3 +84,64 @@ Here is a bare minimum. We:
 2. Call the `add` function that was exported from the previous slide.
 
 That's it. Just keep in mind that JavaScript and WebAssembly agree upon an interface to talk to each other, and you probably want to minimize the number of times you cross that interface since it isn't free.
+
+---
+
+Now let's dive deeper. You have already seen an add operation on a 32-bit integer. How many value types are there? I found this quite surprising. There are only 4: 32 and 64-bit integers, and 32 and 64-bit floats. That is all. So how does WebAssembly handle something more complicated like strings or complex data structures? The WebAssembly has access to a piece of linear memory, addressable per byte. Think of it as a big array. It is up to the WebAssembly program to manage this memory however it sees fit. It seems reasonable that a string could just be consecutive letters stored in a format like ASCII. Time to look at a simplified example. Suppose we have a 3 letter word stored in this memory starting at address 0. Let's write a program that loops over the 3 letters and increments each by one. Line 3 is a new one that initializes this memory with "HAL", starting at address 0.
+
+One more thing to mention before we trace through this code - Remember our add operation from the previous slide? This is syntactic sugar that is different from how the program is stored in binary format. Conceptually, WebAssembly is a stack-based machine. Values are pushed on and poped from a stack. *(Note that this is just conceptually; this may be optimized away when converted to machine code on the target computer.)* The order is different in the binary format. First, a constant of 1 is pushed onto the stack. Then, the value of `i` is pushed onto the stack. Finally, the add operation pops the top two values off the stack and replaces it with the result.
+
+---
+
+So I have rewritten the instructions in the order they appear in the binary format. We are going to trace through this algorithm. 
+
+Across the top is the value of the memory and our local variable `i`. Down the left side are the values on the stack. You can see that memory has been initialized with HAL. We will be working with the numeric representation of those letters. 
+
+The function starts with a loop instruction. All this is is a label we can jump to later.
+
+Next we push the value of `i` onto the stack.
+
+Then we push the same value onto the stack. I know this seems weird, but just go with me for a minute.
+
+The `load8_u` instruction pops an address off the stack, and loads that value from memory as an unsigned 8-bit number.
+
+1 is pushed onto the stack.
+
+The top two values are popped and added together.
+
+`store8` pops a value and index off the stack, and stores the value in memory. This is why we had that extra `i` on the stack from the start of the loop.
+
+1 is pushed onto the stack.
+
+`i` is pushed onto the stack.
+
+Those two values are added together.
+
+A value is popped off the stack and stored in `i`.
+
+That value is pushed back onto the stack.
+
+3 is pushed onto the stack.
+
+Those two values are compared using "less than" as the comparison operator. The result of this operation is 1 for true or 0 for false.
+
+And at the end of the loop we branch to the label if there is a truthy value on the stack, which is the case.
+
+So we made it one iteration through this loop. The end result is that the value at memory location 0 was incremented by 1, and `i` was incremented by 1. Let's run through another iteration, but at a higher level.
+
+First, we want to get the value of memory at index `i`.
+
+Next, we want to increment that value by 1.
+
+Then we want to store the value back to memory.
+
+Then we want to increment `i` by 1.
+
+Finally, we want to see if we've reached the end of our loop.
+
+I'll trace through the final iteration without comments for anyone that wants to think about it.
+
+The final branch does not trigger, and the function completes. And I'll display the memory as ASCII characters again.
+
+---
+
