@@ -315,6 +315,65 @@
                         <li>Modern features</li>
                         <li>Excellent error messages and documentation</li>
                     </ul>
+
+                    <aside data-markdown class="notes">
+                        Time to come back up a level. It doesn't make sense to write WebAssembly by hand. Instead, it is a compilation target for other languages. I chose to go with Rust, which I will explain why on this slide. 
+
+                        Rust has excellent support for compiling to WebAssembly. There is a `wasm-pack` that will compile your Rust source code to WebAssembly. As we looked at previously, there is some boilerplate code needed for JavaScript and WebAssembly to communicate with each other. `wasm-pack` will also generate JavaScript that makes this communication super simple.
+
+                        So why Rust as opposed to some other language? One of the pros is that it has a very small runtime and no automatic garbage collector. If we were compiling a higher-level language that depends on a garbage collector, this logic would have to be included in the `.wasm` file because WebAssembly does not currently have any notion of a garbage collector.
+
+                        Also I wanted fine-grained control over how execution and memory is used because my goal was to optimize for speed.
+
+                        So far, languages like C or C++ would also meet these requirements. Since Rust is newer than those languages, it has many features that I found personally intriguing. Rust has a huge focus on safety. This may seem a bit weird if you haven't seen another language like this, but there is no `null`, so there aren't null pointer exceptions. The compiler is very strict. In many scenarios, if the compiler detects that you haven't handled all possible scenarios, it will produce a compile-time error. And the feature that was the largest learning curve for me was ownership. Each value in Rust has a variable that is the owner, and there can only be one owner at a time. When that owner goes out of scope, the value will be freed. References to values are also extremely useful when you want to pass a value into a function. There are also special rules for references: you can either have a single mutable reference, or any number of immutable references. These restrictions allow Rust to ensure your program never references invalid memory, but it does result in a different mental model when writing your program.
+
+                        There are also modern features like closures and a rich package system called Crates.
+
+                        With such strict compilation, it is nice that the compilation error messages are very detailed, and often suggest what needs to change.
+
+                        I am sure I could have come to a similar result with my emulator using another langugae, but these are the reasons I went with Rust. And learning a new programming language is always a pro in my book!
+                    </aside>
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
+                    <pre><code data-trim data-line-numbers style="max-height: 600px;" class="rust">
+                        fn fizz_buzz_1() {
+                            for i in 1..=30 {
+                                if i % 3 == 0 && i % 5 == 0 {
+                                    println!("FizzBuzz");
+                                } else if i % 3 == 0 {
+                                    println!("Fizz");
+                                } else if i % 5 == 0 {
+                                    println!("Buzz");
+                                } else {
+                                    println!("{}", i);
+                                }
+                            }
+                        }
+                    </code></pre>
+                </section>
+
+                <section data-background="rgb(250, 12, 147)">
+                    <pre><code data-trim data-line-numbers style="max-height: 600px;" class="rust">
+                        fn fizz_buzz_2() {
+                            (1..=30).for_each(|i| match get_special_message(i) {
+                                Some(msg) => println!("{}", msg),
+                                None => println!("{}", i),
+                            });
+                        }
+                        
+                        fn get_special_message(i: isize) -> Option<&'static str> {
+                            if i % 3 == 0 && i % 5 == 0 {
+                                Some("FizzBuzz")
+                            } else if i % 3 == 0 {
+                                Some("Fizz")
+                            } else if i % 5 == 0 {
+                                Some("Buzz")
+                            } else {
+                                None
+                            }
+                        }
+                    </code></pre>
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
