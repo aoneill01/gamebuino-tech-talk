@@ -351,6 +351,14 @@
                             }
                         }
                     </code></pre>
+
+                    <aside data-markdown class="notes">
+                        Let's take a look at some Rust code. I'm going to take a look at FizzBuzz since I'm guessing a number of you already know about it. Basically you iterate over numbers. If the number is divisible by 3, print Fizz. If the number is divisible by 5, print Buzz. If it is divisible by both, print FizzBuzz. Otherwise just print the number.
+
+                        Overall the syntax feels very similar to a lot of programming languages. Line 1 defines a function named `fizz_buzz_1`. Line 2 starts a `for` loop. Lines 3-11 are an `if`, `else if`, `else` block. Nothing too crazy here.
+
+                        The one surprising bit for me is on line 2. You will notice that it is iterating over the values in a range. Don't worry about the range syntax for now. This is very similar to a JavaScript for..of loop. I was surprised to learn Rust does not have a traditional for loop that takes an initial value, condition, and incrementer. However, it makes sense when taken in the light of Rust's security focus. This for..in style for iterating over an array makes it harder to access invalid memory.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
@@ -374,6 +382,16 @@
                             }
                         }
                     </code></pre>
+
+                    <aside data-markdown class="notes">
+                        Now I've rewritten FizzBuzz to show off some Rust features that I find interesting. It is purposely complicated in some ways to show off these features, so don't consider this a good program.
+
+                        Let's start with the funtion starting on line 8. You can see some of the type annotations. This function takes an argument `i` that is of type `isize`. It then returns an `Option`. `Option` is used for many things, but one is an alternative to `null` values. It is an `enum`, which can take on one of two values: either a `Some` or a `None`. `enum`s can also hold additional data. For `Some`, it can hold a value, like you see on line 10, 12, and 14. So this function will return a `Some` value of FizzBuzz, Fizz, or Buzz if it is one of the special cases, or `None` if it is not a special case. 
+
+                        There is also a subtle twist in how Rust returns a value from this function. Rust is also an expression oriented language. Statements end in semicolons and expressions do not. A block will return the value of the last expression. Notice that line 10 does not end in a semicolon. So the result of that `if` block is `Some("FizzBuzz")`. if-else expressions actually result in the value of the selected block, so lines 9-17 evaluate to whichever condition block was true. You can actually use an if-else in Rust much like a ternary operator in languages like JavaScript. And then finally, the function will implicitly return the last expression in the function.
+
+                        Now let's see how this function is used. On line 2 we call the `for_each` function on a range. This function takes a closure to call for each element, much like passing an arrow function to `forEach` in JavaScript. The `i` surrounded by pipes represents the arguments to the closure, and the `match` expression is the body. Had there been more than one expression, it could be wrapped in curly braces for a block expression. `match` is like a super-powered `switch` statement. In our case, we do something different based on whether there was some special message or there was none. This is yet another example of Rust's security. Had we not defined what to do in the `None` case, the program would not have compiled.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
