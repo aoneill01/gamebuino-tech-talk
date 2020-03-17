@@ -398,7 +398,7 @@
                     <pre><code data-trim data-line-numbers style="max-height: 600px;" class="rust">
                         pub struct St7735 {
                             …
-                            image_data: [0; St7735::WIDTH * St7735::HEIGHT];
+                            image_data: [u32; St7735::WIDTH * St7735::HEIGHT];
                         }
                         
                         impl St7735 {
@@ -418,6 +418,10 @@
                             }
                         }
                     </code></pre>
+
+                    <aside data-markdown class="notes">
+                        I won't be going over much of the code for the emulator, but let's look at a couple of interesting snippets. This is part of the code that handles pixels being drawn to the screen. Line 1 defines a `struct`, which has similarities to classes in other languages. On line 3 we declare that this `struct` has an array of length `WIDTH` times `HEIGHT`. Line 8 defines a function on this `struct` that is called whenever a message is sent to the screen hardware. Let's ignore most of the logic handled by this function and focus in on when it needs to draw a pixel to the screen. Lines 11-17 do some bitwise manipulation to convert the rgb value into the correct format. This is something we can also do in JavaScript, but in Rust we have more control over the type of the numeric data. And finally on line 19 we put this data in our array at the correct location for this pixel location.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
@@ -443,6 +447,16 @@
                                 requestAnimationFrame(t => this.step(t));
                         }
                     </code></pre>
+
+                    <aside data-markdown class="notes">
+                        And this is the JavaScript side where we will see this image data being used to draw to a canvas. 
+
+                        Line 5 is where we are calling into the WebAssembly code. Note that `wasm-pack` generated some JavaScript code so that we can easily call the exposed WebAssembly functions.
+
+                        The format of the `image_data` from the previous slide was special. It is the same format JavaScript uses for images that can be drawn to a canvas. So rather than drawing to the canvas a single pixel at a time, we can just take that whole pixel array, store it in image data, and draw the whole image at once. That is what is going on in lines 8-15. Take special notice of the `Uint8ClampedArray`. We are using the shared memory buffer from WebAssembly. (Remember the slide where we manipulated the memory directly in WebAssembly?) We start at the index defined by the location of the start of the array, and continue for a length including the whole screen worth of data.
+
+                        This wasn't too bad. However, an alternative solution would be to use the Rust `web_sys` crate. It includes bindings to interact with web APIs directly from the Rust code, including the DOM, and for our specific scenario, the canvas. At the end of the day, I believe this library would have done something similar to my solution to implement this functionality. Worth it for my own learning to do it by hand.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(250, 12, 147)">
@@ -470,15 +484,39 @@
                 }
             }
                     </code></pre>
+
+                    <aside data-markdown class="notes">
+                        There is nothing really new in this slide, but here is a snippet of the logic that performs the CPU instruction emulation.
+
+                        To squeeze a bit more performance out of the emulator, all of the instructions in the emulated program are pre-parsed into an `Instruction` enum. (Theoretically, a game could overwrite program memory while running, defeating this pre-parsing, but in reality, I haven't run into a game that does this yet.) Each enum option represents a different type of CPU instruction.
+
+                        We use a `match` instruction to determine which instruction to run on line 3. 
+
+                        Line 4 matches a logical shift left by a constant amount. You can see the shift on line 6, storing the result in line 7, and updating some condition flags on lines 8-10.
+
+                        Line 13 matches a branch if equal instruction. So depending on if the zero condition flag is set, it will update the program counter register to where we want to jump to.
+                    </aside>
+                </section>
+
+                <section data-background-image="https://media0.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
+                    <aside data-markdown class="notes">
+                        That's really it! We only looked at a small portion of the actual code for the emulator, but my primary goal of this talk was to share what I learned about using WebAssembly. I can say that I was plesantly surprised how quickly I was able to pick up Rust and compiling to WebAssembly when I had almost no experience with it prior to this project. It isn't a solution to everything, but I encourage you to check it out if you found this talk interesting.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(78, 91, 101)">
                     <h2>Links</h2>
                     <ul>
+                        <li><a href="https://rustwasm.github.io/docs/book/">rustwasm.github.io/docs/book/</a></li>
                         <li><a href="https://github.com/aoneill01/wasm-gamebuino">github.com/aoneill01/wasm-gamebuino</a></li>
                         <li><a href="https://gamebuino.com/">gamebuino.com</a></li>
-                        <li><a href="https://rustwasm.github.io/docs/book/">rustwasm.github.io/docs/book/</a></li>
                     </ul>
+
+                    <aside data-markdown class="notes">
+                        I highly recommend the Rust and WebAssembly "book" below. Also there is a link to my source repo. Be gentle; I'm sure a new pair of eyes will find plenty of things that can be improved.
+
+                        Thanks to everyone that came to listen to me!
+                    </aside>
                 </section>
             </div>
         </div>
