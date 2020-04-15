@@ -21,6 +21,16 @@
                     <gamebuino-emulator src="https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin">
                     </gamebuino-emulator>
                     <a href="http://games.aoneill.com/wasm-proto">http://games.aoneill.com/wasm-proto</a>
+
+                    <aside data-markdown class="notes">
+                        _Introduce myself._
+
+                        I made a web-based game emulator for an obscure handheld gaming system called Gamebuino. That's a mouthful. Here, let me show you what it is. _Play and describe a few games, show off hardware._
+
+                        My first version of this emulator was written in JavaScript. Recently I rewrote the emulator in Rust, compiled to WebAssembly, and run in the browser. This was my first deep dive into WebAssebmly, so I want to share what I learned with you all. Hopefully there should be some content for everyone. We will start with a description of the Gamebuino hardware and how the game emulation works, then dive into WebAssembly, and finally talk about the Rust programming language.
+
+                        Pro tip: You can run the emulator in your browser using the link below. If I bore you with this talk, you can always play some games to fill the time ...but I'm sure that won't happen.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(4, 217, 206)">
@@ -28,9 +38,9 @@
                     <img src="images/gamebuino.png" alt="Gamebuino" />
 
                     <aside data-markdown class="notes">
-                        My story starts back in 2017. I came across a Kickstarter for MAKERbuino, a DIY kit where you build your own hand-held game system. This in turn is based on the original Gamebuino. It has a black and white Nokia screen, an 8-bit microcontroller running at 16Mhz, and is programmed using the Arduino IDE. It was fun writing simple games within the hardware constraints. A few people had written emulators for this original Gamebuino, a couple of them even running in a web browser. Later that year, a new version of the Gamebuino was announced, the Gamebuino META. I'd never written an emulator before, but it sounded like an interesting challenge. 
+                        My story starts back in 2017. I came across a Kickstarter for MAKERbuino, a DIY kit where you build your own hand-held game system. This in turn is based on the original Gamebuino. It has a black and white Nokia screen, an 8-bit microcontroller running at 16Mhz, and is programmed using the Arduino IDE. It was fun writing simple games within the hardware constraints. A few people had written emulators for this original Gamebuino, a couple of them even running in a web browser. Later that year, a new version of the Gamebuino was announced, the Gamebuino META. I'd never written an emulator before, but it sounded like an interesting challenge.
 
-                        As a side note, the main appeal of this device for me is creating my own games on the limited hardware. It is very accessible even for people with no programming experience. If this interests you, just be aware that there are also other options like the Pokitto and Arduboy.
+                        It was an interesting and satsifying process to create an emulator from scratch. One of the most exciting parts was the first time I was able to see the emulator display something on the screen. That first program was a sample from Adafruit that drew fun patterns of lines on the screen.
                     </aside>
                 </section>
 
@@ -64,6 +74,10 @@
 
                 <section data-background="rgb(4, 217, 206)">
                     <img src="images/instructions.png" alt="Instruction set" />
+
+                    <aside data-markdown class="notes">
+                        Don't worry about this text being too small to read. This gives you a rough idea of how many instructions the CPU understands. There are dozens of them, but each one does one simple task. Once the emulator can handle each of these instructions, it can run any program that is thrown it's way.
+                    </aside>
                 </section>
 
                 <section data-background="rgb(4, 217, 206)">
@@ -514,10 +528,15 @@
                         <li><a href="https://rustwasm.github.io/docs/book/">rustwasm.github.io/docs/book/</a></li>
                         <li><a href="https://github.com/aoneill01/wasm-gamebuino">github.com/aoneill01/wasm-gamebuino</a></li>
                         <li><a href="https://gamebuino.com/">gamebuino.com</a></li>
+                        <li><a href="https://www.circuitmess.com/makerbuino/"></a>circuitmess.com/makerbuino</li>
+                        <li><a href="https://www.pokitto.com/">pokitto.com</a></li>
+                        <li><a href="https://arduboy.com/">arduboy.com</a></li>
                     </ul>
 
                     <aside data-markdown class="notes">
-                        I highly recommend the Rust and WebAssembly "book" below. Also there is a link to my source repo. Be gentle; I'm sure a new pair of eyes will find plenty of things that can be improved.
+                        I highly recommend the Rust and WebAssembly "book" below. Also there is a link to my source repo. Be gentle; I'm sure more eyes will find plenty of things that can be improved.
+
+                        I have found programming games on the Gamebuino to be very accessible, even if you have no programming experience. On the off chance you are interested in writing games for a system like Gamebuino, there are other options. Two that I'd recommend checking out include Pokitto and Arduboy.
 
                         Thanks to everyone that came to listen to me!
                     </aside>
@@ -549,7 +568,8 @@
                 "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin",
                 "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/CatsAndCoinsDemo/CatsAndCoinsDemo.bin",
                 "https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/PongMETA/PongMETA.bin",
-                "https://raw.githubusercontent.com/aoneill01/meta-dn2/feature/no-sd/binaries/DnGame/DNGAME.BIN"
+                "https://raw.githubusercontent.com/aoneill01/meta-dn2/feature/no-sd/binaries/DnGame/DNGAME.BIN",
+                "https://raw.githubusercontent.com/aoneill01/meta-solitaire/master/binaries/Solitaire/SOLITAIRE.BIN"
             ]
             setInterval(() => {
                 const gamepad = navigator.getGamepads()[0];
