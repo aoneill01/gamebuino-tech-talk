@@ -365,6 +365,7 @@ class WasmSlide extends HTMLElement {
             grid-row-gap: 16px;
             grid-template-columns: auto auto 1fr;
             grid-template-rows: auto auto 1fr;
+            margin: 0 auto;
             padding: 16px;
             position: relative;
             width: -moz-fit-content;
@@ -372,6 +373,11 @@ class WasmSlide extends HTMLElement {
         }
 
         #memory {
+            grid-column-start: 1;
+            grid-column-end: 3;
+        }
+
+        nav {
             grid-column-start: 1;
             grid-column-end: 3;
         }
@@ -410,7 +416,7 @@ class WasmSlide extends HTMLElement {
             display: flex;
             flex-direction: column;
             grid-row-start: 2;
-            grid-row-end: 4;
+            grid-row-end: 3;
         }
 
         #stack>div {
@@ -554,7 +560,7 @@ class WasmSlide extends HTMLElement {
                     class="target3">&nbsp;</span></div>
             <div class="enc">3A 00 00</div>
             <pre>  <span class="token keyword">i32<span class="token punctuation">.</span>store8</span></pre>
-            <div class="work">memory[<span class="target1">0</span>] ← <span class="target2">0</span></div>
+            <div class="work">memory[<span class="target1">0</span>] ← <span class="target2">00</span></div>
             <div class="enc">41 01</div>
             <pre>  <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span></pre>
             <div class="work"></div>
@@ -585,10 +591,13 @@ class WasmSlide extends HTMLElement {
             <pre><span class="token keyword">end</span></pre>
             <div class="work"></div>
         </div>
+        <nav>
+            <button id="previous">←</button>
+            <button id="next">→</button>
+        </nav>
     </div>
 
-    <button id="previous">←</button>
-    <button id="next">→</button>
+
         `;
 
         this.root.getElementById("next").addEventListener("click", this.next.bind(this));
