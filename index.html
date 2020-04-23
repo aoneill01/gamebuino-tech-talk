@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <title>Tech Talk by Andy O'Neill</title>
+        <title>Building an Emulator with WebAssembly and Rust - Andy O'Neill</title>
 
         <link rel="stylesheet" href="css/reset.css">
         <link rel="stylesheet" href="css/reveal.css">
@@ -25,11 +25,11 @@
                     <aside data-markdown class="notes">
                         _Introduce myself._
 
-                        I made a web-based game emulator for an obscure handheld gaming system called Gamebuino. That's a mouthful. Here, let me show you what it is. _Play and describe a few games, show off hardware._
+                        I made a web-based game emulator for a not very well known gaming system called Gamebuino. Before I begin, this is a link to the emulator where you can try it out. Just make sure you read the controls since some of the buttons are unusual. And you can try different games by clicking on these links. I'm sure you won't be too distracted to listen to the talk as well.
+
+                        _Play and describe a few games._
 
                         My first version of this emulator was written in JavaScript. Recently I rewrote the emulator in Rust, compiled to WebAssembly, and run in the browser. This was my first deep dive into WebAssebmly, so I want to share what I learned with you all. Hopefully there should be some content for everyone. We will start with a description of the Gamebuino hardware and how the game emulation works, then dive into WebAssembly, and finally talk about the Rust programming language.
-
-                        Pro tip: You can run the emulator in your browser using the link below. If I bore you with this talk, you can always play some games to fill the time ...but I'm sure that won't happen.
                     </aside>
                 </section>
 
@@ -38,12 +38,17 @@
                     <img src="images/gamebuino.png" alt="Gamebuino" />
 
                     <aside data-markdown class="notes">
-                        So, I was introduced to Gamebuino a few years ago when I purchased the MAKERbuino. The MAKERbuino is a kit where you build your own hand-held gaming system. It was my second time ever soldering anything, and I recommend building something electronic like this to anyone who hasn't. The MAKERbuino is based on the original Gamebuino Classic. (Interestingly, this kit was not created by the Gamebuino team. It was created by someone who was still a teenager at the time.) The Gamebuino Classic has extremely limiting hardware: an 8-bit microcontroller running at 16Mhz and a tiny black and white screen that ancient Nokia phones used to use. By flickering pixels on and off quickly, you can even get a gray color.
+                        So, I was introduced to Gamebuino a few years ago when I purchased the MAKERbuino. The MAKERbuino is a kit where you build your own hand-held gaming system. It was my second time ever soldering anything, and I recommend building something electronic like this to anyone who hasn't. The MAKERbuino is based on the original Gamebuino Classic. The Gamebuino Classic has extremely limited hardware: an 8-bit microcontroller running at 16Mhz and a tiny black and white screen that ancient Nokia phones used to use. By flickering pixels on and off quickly, you can even simulate a gray color.
 
-                        Part of the fun was putting together the hardware, but I really enjoyed writing games as well. Sure, you can download games other people in the community wrote, but you can also build your own games using the Arduino IDE and a Gamebuino library that handles common things for you. The limited hardware was actually a plus. It was a blast to try and make a game with all the limitations. One of the games I made was Solitaire. Anyone remember the bouncing cards when you won Solitaire on Windows back in the day? Definitely a required feature.
+                        Part of the fun was putting together the hardware, but I really enjoyed writing games as well. Sure, you can download games other people in the community wrote, but you can also build your own games using the Arduino IDE and a Gamebuino library that handles interfacing with the hardware for you. The limited hardware was actually a plus. It was a blast to try and make a game with all the limitations. One of the games I made was Solitaire. Anyone remember the bouncing cards when you won Solitaire on Windows back in the day? Definitely a required feature.
 
                         And then Gamebuino announced they were coming out with a new version: the Gamebuino META. - color screen, higher resolution, faster, 32-bit processor - I was on board. Still limiting enough that you would have to get creative to write interesting games, but unlocking a bunch of new possibilities. I ported my Solitaire game. I ported a simple ray-caster. I tried creative ways of using the screen. Other people in the community came up with even more interesting games and demos.
+                </section>
 
+                <section data-background="rgb(0, 122, 209)">
+                    <iframe data-autoplay width="900" height="500" src="https://www.youtube.com/embed/5t62--Gd5Dk"></iframe>
+
+                    <aside data-markdown class="notes">
                         But that's not what this talk is going to focus on. A couple of people made an emulator for the Gamebuino Classic, one of them even running in a web browser. I had never written an emulator, but I wondered if it would be possible for the Gamebuino META. I was lucky enough to get an early version of the Gamebuino META. I started tinkering with writing an emulator in JavaScript. It started with small steps to prove I could get close to the end performance I would need. Then I started implementing the instructions that the CPU supported. Eventually it could "run" simple programs. I started using a demo program from Adafruit that would draw lines and shapes to the screen. One of the most satisfying moments of this whole project was when I first saw this demo program working in my web browser! 
 
                         That's not to say things went smoothly. There were plenty of bugs to squash. For example, one demo program was supposed to print the digits of pi. My emulator was printing 3 point plus a bunch of incorrect digits. (Interesting side note\: the processor does not have native support for floating point numbers, so all floating point logic is handled in software.) It was pretty obvious that some instruction was not implemented correctly, but how do you track something like that when the problem could be the side effect of a single instruction after potentially millions of successful instructions? I spent many hours decompiling programs to ARM Assembly and tracing through by hand until I found something my emulator was doing incorrectly.
@@ -66,7 +71,7 @@
                     <aside data-markdown class="notes">
                         To give this talk context, we need to discuss the hardware of the Gamebuino META. I am going to go pretty fast because you don't need to understand everything for the rest of the talk...
 
-                        Perhaps the most important part to creating the emulator, it is running a 32-bit ARM-based processor at 48MHz. Many instructions can be executed in a single clock cycle, so we are talking about theoretically simulating 48 million instructions per second. Keep in mind that each of these simulated instructions involves several steps, such as: parsing the instruction, reading and writing values to memory, updating condition flags, and incrementing the program counter. At the end of the day, this is where the vast amount of processor time will be spent.
+                        Perhaps the most important part to creating the emulator, it is running a 32-bit ARM-based processor at 48MHz. Many instructions can be executed in a single clock cycle, so we are talking about theoretically simulating 48 million instructions per second. Keep in mind that each of these simulated instructions involves several steps, such as: parsing the instruction, reading and writing values to memory, updating condition flags, and incrementing the program counter.
                         
                         256KB of Flash memory. This is where the game is stored when running. Additional games can be loaded from an SD card. Although assets could be loaded from the SD card on demand, most games include _everything_ within those 256KB. Compared to programs sizes on modern PCs or JavaScript files for a simple website, this is miniscule!
                         
@@ -167,7 +172,7 @@
                     <img src="images/comparison.png" height="500" />
 
                     <aside data-markdown class="notes">
-                        I had a hunch that I could get better performance by using WebAssembly. Many of the operations that the emulator simulates involve 8, 16, and 32-bit integer math. JavaScript numbers are represented as 64-bit floating point numbers. *(In fact, the microcontroller doesn't even have a floating point. All floating point cacluations are done by software.)* Don't get me wrong - JavaScript engines have become incredibly smart and fast. It just felt like it would be adventageous to have lower level control over memory for this particular workload. I don't want anyone to equate WebAssembly meaning faster than JavaScript. That definitely isn't always the case. This is a sample size of 1, and perhaps the JavaScript version could be faster than the WebAssebmly version with some tweaks. What I do know is that as someone who is very familiar with JavaScript and completely new to Rust, the end result ran several times faster!
+                        I had a hunch that I could get better performance by using WebAssembly. Many of the operations that the emulator simulates involve 8, 16, and 32-bit integer math. JavaScript numbers are represented as 64-bit floating point numbers. Don't get me wrong - JavaScript engines have become incredibly smart and fast. It just felt like it would be adventageous to have lower level control over memory for this particular workload. I don't want anyone to equate WebAssembly meaning faster than JavaScript. That definitely isn't always the case. This is a sample size of 1, and perhaps the JavaScript version could be faster than the WebAssebmly version with some tweaks. What I do know is that as someone who is very familiar with JavaScript and completely new to Rust, the end result ran several times faster!
 
                         The "Before" chart shows that the vast amount of time was spent by the browser running the emulator. The "After" chart shows that roughly a quarter of the time is spent running the emulator, leaving much more time available to the browser. Note that this was run on a beefy developer machine. You can imagine that running on lower end devices was very slow for the JavaScript version and acceptable for the WebAssembly version.
                         
