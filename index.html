@@ -20,16 +20,22 @@
                     <h2>Building an Emulator with WebAssembly and Rust</h2>
                     <gamebuino-emulator src="https://raw.githubusercontent.com/Rodot/Games-META/master/binaries/METAtris/METAtris.bin">
                     </gamebuino-emulator>
-                    <a href="http://games.aoneill.com/wasm-proto">http://games.aoneill.com/wasm-proto</a>
 
                     <aside data-markdown class="notes">
-                        _Introduce myself._
+                        Hello everyone. I am Andy O'Neill. I am from the Raleigh office and I am a part of the UI Engineering studio.
 
-                        I made a web-based game emulator for a not very well known gaming system called Gamebuino. Before I begin, this is a link to the emulator where you can try it out. Just make sure you read the controls since some of the buttons are unusual. And you can try different games by clicking on these links. I'm sure you won't be too distracted to listen to the talk as well.
+                        For fun, a couple of years ago I made I made a web-based game emulator for a game system called Gamebuino. Before we begin, let me show you the end result.
 
                         _Play and describe a few games._
 
-                        My first version of this emulator was written in JavaScript. Recently I rewrote the emulator in Rust, compiled to WebAssembly, and run in the browser. This was my first deep dive into WebAssebmly, so I want to share what I learned with you all. Hopefully there should be some content for everyone. We will start with a description of the Gamebuino hardware and how the game emulation works, then dive into WebAssembly, and finally talk about the Rust programming language.
+                        My first version of this emulator was written in JavaScript. Recently I rewrote the emulator in Rust, compiled to WebAssembly. This was my first time using both of those technologies, so I want to share what I learned with you all. Hopefully there should be some content for everyone. I am going to break this up into roughly 4 sections. 
+                        
+                        1. First I'll give you a bit of background on my story up until the rewrite;
+                        2. Then I'll give you an overview of the Gamebuino hardware and how the game emulation works;
+                        3. After that we will dive into WebAssembly;
+                        4. And finally we will talk about the Rust programming language.
+
+                        If you can make it to the end, I'll share the link to the emulator so we can all play some games.
                     </aside>
                 </section>
 
@@ -40,7 +46,9 @@
                     <aside data-markdown class="notes">
                         So, I was introduced to Gamebuino a few years ago when I purchased the MAKERbuino. The MAKERbuino is a kit where you build your own hand-held gaming system. It was my second time ever soldering anything, and I recommend building something electronic like this to anyone who hasn't. The MAKERbuino is based on the original Gamebuino Classic. The Gamebuino Classic has extremely limited hardware: an 8-bit microcontroller running at 16Mhz and a tiny black and white screen that ancient Nokia phones used to use. By flickering pixels on and off quickly, you can even simulate a gray color.
 
-                        Part of the fun was putting together the hardware, but I really enjoyed writing games as well. Sure, you can download games other people in the community wrote, but you can also build your own games using the Arduino IDE and a Gamebuino library that handles interfacing with the hardware for you. The limited hardware was actually a plus. It was a blast to try and make a game with all the limitations. One of the games I made was Solitaire. Anyone remember the bouncing cards when you won Solitaire on Windows back in the day? Definitely a required feature.
+                        Part of the fun was putting together the hardware, but I really enjoyed writing games as well. Sure, you can download games other people in the community wrote, but you can also build your own games using the Arduino IDE and a Gamebuino library that handles interfacing with the hardware for you. One of the games I made was Solitaire. Anyone remember the bouncing cards when you won Solitaire on Windows back in the day? Definitely a required feature.
+                        
+                        This may seem counter-intuitive, but the limited hardware was actually a plus for me. It was exciting and challenging to try and squeeze everything I could from the hardware.
 
                         And then Gamebuino announced they were coming out with a new version: the Gamebuino META. - color screen, higher resolution, faster, 32-bit processor - I was on board. Still limiting enough that you would have to get creative to write interesting games, but unlocking a bunch of new possibilities. I ported my Solitaire game. I ported a simple ray-caster. I tried creative ways of using the screen. Other people in the community came up with even more interesting games and demos.
                 </section>
@@ -69,7 +77,7 @@
                     </ul>
 
                     <aside data-markdown class="notes">
-                        To give this talk context, we need to discuss the hardware of the Gamebuino META. I am going to go pretty fast because you don't need to understand everything for the rest of the talk...
+                        ...Which takes us to the next section of this talk. To give this talk context, we need to discuss the hardware of the Gamebuino META. 
 
                         Perhaps the most important part to creating the emulator, it is running a 32-bit ARM-based processor at 48MHz. Many instructions can be executed in a single clock cycle, so we are talking about theoretically simulating 48 million instructions per second. Keep in mind that each of these simulated instructions involves several steps, such as: parsing the instruction, reading and writing values to memory, updating condition flags, and incrementing the program counter.
                         
@@ -162,8 +170,6 @@
                         3. and schedule the next execution of the game loop.
                         
                         The last step is worth particular note. JavaScript runs on the main thread. If the emulation stayed in a hard loop, the browser would never be able to render changes to the screen. We need to have moments in the logic where it sleeps, allowing other browser tasks to complete. The more we are not hogging the CPU, the more responsive the site will be.
-                        
-                        My first implementation of this emulator was written in TypeScript. It was incredibly satisfying to see it work successfully. Which brings us to, why rewrite this in Rust and WebAssembly?...
                     </aside>
                 </section>
  
@@ -172,6 +178,8 @@
                     <img src="images/comparison.png" height="500" />
 
                     <aside data-markdown class="notes">
+                        My first implementation of this emulator was written in TypeScript. It was incredibly satisfying to see it work successfully. Which brings us to our next section about WebAssembly, starting with why rewrite this in WebAssembly?...
+
                         I had a hunch that I could get better performance by using WebAssembly. Many of the operations that the emulator simulates involve 8, 16, and 32-bit integer math. JavaScript numbers are represented as 64-bit floating point numbers. Don't get me wrong - JavaScript engines have become incredibly smart and fast. It just felt like it would be adventageous to have lower level control over memory for this particular workload. I don't want anyone to equate WebAssembly meaning faster than JavaScript. That definitely isn't always the case. This is a sample size of 1, and perhaps the JavaScript version could be faster than the WebAssebmly version with some tweaks. What I do know is that as someone who is very familiar with JavaScript and completely new to Rust, the end result ran several times faster!
 
                         The "Before" chart shows that the vast amount of time was spent by the browser running the emulator. The "After" chart shows that roughly a quarter of the time is spent running the emulator, leaving much more time available to the browser. Note that this was run on a beefy developer machine. You can imagine that running on lower end devices was very slow for the JavaScript version and acceptable for the WebAssembly version.
@@ -198,7 +206,7 @@
                     </code></pre>
 
                     <aside data-markdown class="notes">
-                        Chances are you'll never need to interact directly with the WebAssembly format. However, I'm one of those people that like to see how things work under the hood. Let's take a deep dive for a few slides before using this information at a higher level...
+                        Chances are you'll never need to interact directly with the WebAssembly format. However, I'm one of those people that like to see how things work under the hood. I think some of you will find this interesting, but bear with me if not. We will be through this section before too long.
 
                         Just like various assembly languages that are compiled to machine code, WebAssembly has a text representation for the binary format. Here is a simple WebAssembly module. It:
                         
@@ -348,7 +356,7 @@
                     </ul>
 
                     <aside data-markdown class="notes">
-                        Time to come back up a level. It doesn't make sense to write WebAssembly by hand. Instead, it is a compilation target for other languages. I chose to go with Rust, which I will explain why on this slide. 
+                        Time to come back up a level for our final section of the talk. It doesn't make sense to write WebAssembly by hand. Instead, it is a compilation target for other languages. I chose to go with Rust, which I will explain why on this slide. 
 
                         Rust has excellent support for compiling to WebAssembly. There is a `wasm-pack` that will compile your Rust source code to WebAssembly. As we looked at previously, there is some boilerplate code needed for JavaScript and WebAssembly to communicate with each other. `wasm-pack` will also generate JavaScript that makes this communication super simple.
 
@@ -538,6 +546,7 @@
                 <section data-background="rgb(78, 91, 101)">
                     <h2>Links</h2>
                     <ul>
+                        <li><a href="http://games.aoneill.com/wasm-proto">games.aoneill.com/wasm-proto</a></li>
                         <li><a href="https://rustwasm.github.io/docs/book/">rustwasm.github.io/docs/book/</a></li>
                         <li><a href="https://github.com/aoneill01/wasm-gamebuino">github.com/aoneill01/wasm-gamebuino</a></li>
                         <li><a href="https://gamebuino.com/">gamebuino.com</a></li>
@@ -547,11 +556,13 @@
                     </ul>
 
                     <aside data-markdown class="notes">
+                        Here is the link to the emulator I promised. _Show how to use it correctly._
+
                         I highly recommend the Rust and WebAssembly "book" below. Also there is a link to my source repo. Be gentle; I'm sure more eyes will find plenty of things that can be improved.
 
                         I have found programming games on the Gamebuino to be very accessible, even if you have no programming experience. On the off chance you are interested in writing games for a system like Gamebuino, there are other options. Two that I'd recommend checking out include Pokitto and Arduboy.
 
-                        Thanks to everyone that came to listen to me!
+                        Thanks to everyone that came to listen to me! Are there any questions?
                     </aside>
                 </section>
             </div>
